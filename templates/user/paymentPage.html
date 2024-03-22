@@ -1,0 +1,101 @@
+{% extends 'user/layout/layout.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+
+{% if enroll_data.status != 'can_attend' %}
+<div class="grid grid-rows-1 grid-cols-12 gap-5 p-4">
+    <div class="bg-white w-[30vw] border rounded-lg shadow-lg px-6 py-8 mt-8 col-span-4">
+        <div class="flex justify-between mb-6">
+
+            <h1 class="text-lg font-bold">Invoice</h1>
+            <div class="text-gray-700">
+                <div>Date: {{enroll_data.created_date|date}}</div>
+                <div>Invoice #: INV{{enroll_data.id}}</div>
+            </div>
+        </div>
+        <div class="mb-8">
+            <h2 class="text-lg font-bold mb-4">Bill To:</h2>
+            <div class="text-gray-700 mb-2">{{enroll_data.student}}</div>
+            <div class="text-gray-700 mb-2">{{enroll_data.address}}</div>
+        </div>
+        <table class="w-full mb-8">
+            <thead>
+                <tr>
+                    <th class="text-left font-bold text-gray-700">Description</th>
+                    <th class="text-right font-bold text-gray-700">Amount</th>
+                </tr>
+            </thead>
+            <tbody class="my-3">
+                <tr>
+                    <td class="text-left text-gray-700">{{enroll_data.class_enrolled.name}}</td>
+                    <td class="text-right text-gray-700">NPR {{enroll_data.class_enrolled.price}}</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td class="text-left font-bold text-gray-700">Total</td>
+                    <td class="text-right font-bold text-gray-700">NPR {{enroll_data.class_enrolled.price}}</td>
+                </tr>
+            </tfoot>
+        </table>
+        <div class="text-gray-700 mb-2">Thank you for your business!</div>
+        <div class="text-gray-700 text-sm">Please remit payment within 30 days.</div>
+    </div>
+    <div class="col-span-8 py-8 px-3">
+        {% if error_message %}
+        <div class="alert alert-danger">{{ error_message }}</div>
+        {% endif %}
+        <h5>Instruction to make a payment</h5>
+        <ul>
+            <li>
+                1. To make a payment you need to deposit the mentioned invoice amount to following details
+                <div class="payment-details px-5 py-4">
+                    Bank Name: Nabil Bank LTD <br>
+                    Bank Acc Number: 9876543212345 <br>
+                    Bank Branch : Kathamandu, Lalitpur
+                </div>
+            </li>
+            <li>
+                2. After you make your payment please submit the screenshot or image of the payment here
+                <div id="myDropzone" class="dropzone mt-4">
+                    {% csrf_token %}
+                </div>
+            </li>
+            <li class="mt-4">
+                3. After you make a payment wait for the admin to verify your payment
+            </li>
+            <li>
+                4. If anything goes wrong you can talk to our chat support just click on chat button below on right
+                corner
+            </li>
+
+        </ul>
+    </div>
+</div>
+{% else %}
+<div class="flex bg-gray-200 justify-center items-center m-5 text-gray-700 h-[50vh]">
+    You have already been enrolled to the class
+</div>
+
+{% endif %}
+
+<script>
+    // Initialize Dropzone
+    Dropzone.autoDiscover = false; // Prevent Dropzone from automatically attaching to elements with class dropzone
+    var enrollDataId = "{{ enroll_data.id }}"; // Accessing enroll_data.id using Django template syntax
+    var uploadUrl = `/submit-payment/${enrollDataId}`;
+    var csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    var myDropzone = new Dropzone("#myDropzone", {
+        url: uploadUrl, // URL where files will be uploaded
+        paramName: "file", // The name that will be used to transfer the file to the server
+        maxFilesize: 20, // MB
+        maxFiles: 5, // Maximum number of files
+        acceptedFiles: ".jpg, .jpeg, .png, .pdf", // Allowed file types
+        dictDefaultMessage: "Drop files here to upload",
+        headers: {
+            "X-CSRFToken": csrfToken // Pass CSRF token in headers
+        }
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends 'user/layout/layout.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<section class="text-gray-600 body-font">
+    <div class="container px-5 py-5 mx-auto">
+        <div class="w-full mb-5 ">
+            <h1 class="sm:text-3xl text-2xl font-medium title-font mb-2 text-gray-900">Your Classes
+            </h1>   
+        </div>
+        <div class="flex flex-wrap -m-4">
+            {% for class in classes %}
+            <div class="xl:w-1/2 md:w-1/2 p-4">
+                <a href="/enrolled-classes/{{class.id}}" class="relative block overflow-hidden rounded-lg border border-gray-100 hover:shadow-md p-4 sm:p-6 lg:p-8">
+                    <span
+                        class="absolute inset-x-0 bottom-0 h-2 bg-gradient-to-r from-green-300 via-blue-500 to-purple-600"></span>
+
+                    <div class="sm:flex sm:justify-between sm:gap-4">
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-900 sm:text-xl">
+                                {{class.name}}
+                            </h3>
+
+                            <p class="mt-1 text-xs font-medium text-gray-600">By {{class.teacher}}</p>
+                        </div>
+
+                        <div class="hidden sm:block sm:shrink-0">
+                            <img alt=""
+                                src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1180&q=80"
+                                class="size-16 rounded-lg object-cover shadow-sm" />
+                        </div>
+                    </div>
+
+                    <!-- <div class="mt-4">
+                        <p class="text-pretty text-sm text-gray-500">
+                            Lorem ipsum dolor sit, amet consectetur adipisicing elit. At velit illum provident a, ipsa
+                            maiores deleniti consectetur nobis et eaque.
+                        </p>
+                    </div> -->
+
+                    <dl class="mt-6 flex gap-4 sm:gap-6">
+                        <div class="flex flex-col-reverse">
+                            <dt class="text-sm font-medium text-gray-600">NPR {{class.price}}</dt>
+                            <dd class="text-xs text-gray-500">Price</dd>
+                        </div>
+
+                        <div class="flex flex-col-reverse">
+                            <dt class="text-sm font-medium text-gray-600">{{class.class_time}}</dt>
+                            <dd class="text-xs text-gray-500">Class time</dd>
+                        </div>
+                    </dl>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}
