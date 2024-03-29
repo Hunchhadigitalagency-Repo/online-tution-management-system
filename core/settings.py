@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-a33u^leu&8^7y6z00-cb7m2^g0*&*21o7zba$=xk&@x()%0=bg
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['online-tution-management-system.onrender.com']
+ALLOWED_HOSTS = ['online-tution-management-system.onrender.com', '127.0.0.1']
 
 
 # Application definition
@@ -126,10 +126,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 if not DEBUG:
     STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
-if DEBUG:
-    STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static')
-    ]
+
+STATICFILES_DIRS = [
+os.path.join(BASE_DIR, 'static')
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
