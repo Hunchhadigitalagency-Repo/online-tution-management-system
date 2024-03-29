@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import ClassModel,EnrolledStudent,ClassroomResource,EnrollmentPayment
+from .models import ClassModel,EnrolledStudent,ClassroomResource,EnrollmentPayment,UserProfile,Testimonial
 from django.contrib.auth import logout,authenticate,login
 from django.shortcuts import redirect,get_object_or_404
 from django.contrib import messages
@@ -7,43 +7,97 @@ from django.http import JsonResponse
 from django.core.files.storage import FileSystemStorage
 import os   
 from django.conf import settings
+from django.contrib.auth.hashers import make_password
 
 # Create your views here.
 def index(request):
-    return  render(request, 'main.html')
+    teachers = UserProfile.objects.select_related('user').filter(role='teacher')
+    testimonials = Testimonial.objects.all()
+    return render(request, 'main.html', {'teachers': teachers,'testimonials':testimonials}) 
 
 def dashbaord(request):
-    # Retrieve the current logged-in user
-    current_user = request.user
-    is_teacher = current_user.userprofile.role == 'teacher' if hasattr(current_user, 'userprofile') else False
-    if is_teacher:
-        teacher_classes = ClassModel.objects.filter(teacher=current_user)
-        return render(request,'teacher/index.html',{'classes': teacher_classes})  
+    if request.user.is_authenticated:
+        # Retrieve the current logged-in user
+        current_user = request.user
+        is_teacher = current_user.userprofile.role == 'teacher' if hasattr(current_user, 'userprofile') else False
+        if is_teacher:
+            teacher_classes = ClassModel.objects.filter(teacher=current_user)
+            return render(request,'teacher/index.html',{'classes': teacher_classes})  
+        else:
+            # Filter the classes where the current user has been enrolled
+            enrolled_classes = ClassModel.objects.filter(enrolled_students__student=current_user)
+            return render(request, 'user/index.html', {'classes': enrolled_classes})
     else:
-        # Filter the classes where the current user has been enrolled
-        enrolled_classes = ClassModel.objects.filter(enrolled_students__student=current_user)
-        return render(request, 'user/index.html', {'classes': enrolled_classes})
+        # Redirect to login page or handle unauthenticated user
+        return redirect('login') 
 
 def profile(request):
+    current_user = request.user
+    is_teacher = current_user.userprofile.role == 'teacher' if hasattr(current_user, 'userprofile') else False
     if request.method == 'POST':
-        profile = request.POST.file('profile')
-        # Update user's email if provided
-        if profile:
-            request.user.user_profile.profile = profile
+        # Update profile picture
+        profile = request.FILES.get('profile')
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+
+        if first_name:
+            request.user.first_name = first_name
+            request.user.save()
+            
+        if last_name:
+            request.user.last_name = last_name
             request.user.save()
 
-        # Handle password change if all fields are provided
+        if profile:
+            request.user.userprofile.profile = profile
+            request.user.userprofile.save()
+
+        # Handle password change
         old_password = request.POST.get('old_password')
         new_password = request.POST.get('new_password')
         confirm_password = request.POST.get('confirm_password')
 
-        if all([old_password, new_password, confirm_password]):
-          
-        else:
-            return redirect('user/profile.html')  # Replace with the URL name of the profile update page
-
+        if old_password and new_password and confirm_password:
+            # Check if old password is correct
+            user = authenticate(username=request.user.username, password=old_password)
+            if user is not None:
+                # Check if new password matches confirm password
+                if new_password == confirm_password:
+                    # Update user's password
+                    request.user.password = make_password(new_password)
+                    request.user.save()
+                    messages.success(request, "Password changed successfully.")
+                    if is_teacher:
+                        return render(request,'teacher/profile.html') 
+                    else:
+                        return render(request,'user/profile.html');
+                else:
+                    if is_teacher:
+                        messages.error(request, "Confirm password didnt match with new password.")
+                        return render(request,'teacher/profile.html',{'confirm_password_error': True}) 
+                    else:
+                        return render(request,'user/profile.html');
+            else:
+                if is_teacher:
+                    messages.error(request, "Old password didnt match.")
+                    return render(request,'teacher/profile.html', {'old_password_error': True}) 
+                else:
+                    return render(request,'user/profile.html');
+        elif (old_password and not new_password) or (old_password and not confirm_password):
+            if is_teacher:
+                return render(request,'teacher/profile.html') 
+            else:
+                return render(request,'user/profile.html');
+        elif (new_password or confirm_password) and not old_password:
+            if is_teacher:
+                return render(request,'teacher/profile.html') 
+            else:
+                return render(request,'user/profile.html');
     
-    return render(request,'user/profile.html');
+    if is_teacher:
+        return render(request,'teacher/profile.html') 
+    else:
+        return render(request,'user/profile.html');
 
 def classes(request):
     classes = ClassModel.objects.all()
@@ -205,3 +259,21 @@ def postResources(request, class_id):
     
     # Handle the case where neither file nor message is provided
     return render(request, 'teacher/enrolledClasses.html',{'class_details': class_details, 'class_resources':class_resource})
+
+
+def update_course_syllabus(request, course_id):
+    if request.method == 'POST':
+        # Get the course object
+        try:
+            course = ClassModel.objects.get(id=course_id)
+        except ClassModel.DoesNotExist:
+            messages.error(request, "Course not found.")
+            return redirect(f'/enrolled-classes/{course_id}')  # Redirect to a suitable URL if course doesn't exist
+
+        # Update the syllabus
+        syllabus = request.POST.get('syllabus')
+        course.syllabus = syllabus
+        course.save()
+
+        messages.success(request, "Syllabus updated successfully.")
+        return redirect(f'/enrolled-classes/{course_id}')  # Redirect to a suitable URL after successful update

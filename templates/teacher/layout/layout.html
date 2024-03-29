@@ -6,6 +6,9 @@
     <title>{% block title %}My Site{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css"  rel="stylesheet" />
+    <script src="https://cdn.tiny.cloud/1/5igcej9s1wc7bj7mlein0n2ax7zny1unlbm199p5byziiwxy/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+    <link href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 </head>
 
 <body>
@@ -42,7 +45,7 @@
                                 class="block py-2 px-3 text-gray-900 bg-blue-700 rounded md:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500">Home</a>
                         </li>
                         <li>
-                            <a href="/my-classes/"
+                            <a href="/my-profile/"
                                 class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Profile</a>
                         </li>
                         <li>
@@ -61,7 +64,25 @@
     <footer>
         <!-- Footer content -->
     </footer>
-
+    <script>
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == 'error' %}
+                    var bgColor = "#FF6347"; // Red color for error messages
+                {% elif message.tags == 'success' %}
+                    var bgColor = "#4CAF50"; // Green color for success messages
+                {% endif %}
+                Toastify({
+                    text: "{{ message }}",
+                    duration: 3000,
+                    close: true,
+                    gravity: "top", // Display toast at the top of the page
+                    position: "right", // Center align the toast message
+                    backgroundColor: bgColor,
+                }).showToast();
+            {% endfor %}
+        {% endif %}
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
 </body>
 

@@ -107,11 +107,11 @@
                     <ul class=" divide-y">
                         <li class="py-5 flex items-start justify-between">
                             <div class="flex gap-3">
-                                <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8YXZhdGFyfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60"
+                                <img src="{{ class_details.teacher.userprofile.profile.url }}"
                                     class="flex-none w-12 h-12 rounded-full" />
                                 <div>
                                     <span
-                                        class="block text-sm text-gray-700 font-semibold">{{class_details.teacher}}</span>
+                                        class="block text-sm text-gray-700 font-semibold">{{class_details.teacher.first_name}} {{class_details.teacher.last_name}}</span>
                                     <span
                                         class="block text-sm text-gray-700 font-semibold">{{class_details.teacher.email}}</span>
                                 </div>

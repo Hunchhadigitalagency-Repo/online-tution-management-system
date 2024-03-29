@@ -71,3 +71,12 @@ class ClassroomResource(models.Model):
     class Meta:
         verbose_name = 'Classroom Resource'
         verbose_name_plural = 'Classroom Resources'
+
+class Testimonial(models.Model):
+    image = models.FileField(upload_to='testimonials/')
+    designation = models.CharField(max_length=100)
+    message = models.TextField()
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name + ' - ' + self.designation

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import UserProfile,ClassModel,EnrolledStudent,ClassroomResource,EnrollmentPayment
+from .models import UserProfile,ClassModel,EnrolledStudent,ClassroomResource,EnrollmentPayment,Testimonial
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
 from django.db.models import Count
@@ -73,3 +73,7 @@ class ClassModelAdmin(admin.ModelAdmin):
             enrolled_students_count=Count('enrolled_students')
         )
         return queryset
+    
+@admin.register(Testimonial)
+class TestimonialAdmin(admin.ModelAdmin):
+    list_display = ('name', 'designation')
