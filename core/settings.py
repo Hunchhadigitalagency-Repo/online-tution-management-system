@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-a33u^leu&8^7y6z00-cb7m2^g0*&*21o7zba$=xk&@x()%0=bg
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['online-tution-management-system.onrender.com']
+ALLOWED_HOSTS = ['online-tution-management-system.onrender.com', '127.0.0.1']
 
 
 # Application definition
@@ -122,10 +122,9 @@ MEDIA_URL = '/media/'
 STATIC_URL = '/static/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'tution/static'),  # Replace 'your_app' with the name of your Django app
+    os.path.join(BASE_DIR, 'static/'),  # Replace 'your_app' with the name of your Django app
 ]
 
 # Default primary key field type
