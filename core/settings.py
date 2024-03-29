@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-a33u^leu&8^7y6z00-cb7m2^g0*&*21o7zba$=xk&@x()%0=bg
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '612a-2400-1a00-bd11-411c-7660-a033-9fb4-66ac.ngrok-free.app']
+ALLOWED_HOSTS = ['online-tution-management-system.onrender.com']
 
 
 # Application definition
