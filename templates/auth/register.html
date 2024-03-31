@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Infonet | Register</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
@@ -12,17 +12,29 @@
     <div class="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8">
         <div class="mx-auto max-w-lg">
             <h1 class="text-center text-2xl font-bold text-indigo-600 sm:text-3xl">Let's start with your details</h1>
+            <!-- Add this debugging section -->
 
-            <form action="#" class="mb-0 mt-6 space-y-4 rounded-lg p-4 shadow-lg sm:p-6 lg:p-8">
+            {% if error and 'username' in error %}
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <strong class="font-bold">Validation Error!</strong>
+                <span class="block sm:inline"> {{ error }}</span>
+            </div>
+            {% endif %}
+            <!-- End of debugging section -->
+            <form action="/register/" method="post" class="mb-0 mt-6 space-y-4 rounded-lg p-4 shadow-lg sm:p-6 lg:p-8">
+                {% csrf_token %}
                 <p class="text-center text-lg font-medium">Sign in to your account</p>
-
                 <div>
                     <label for="email" class="sr-only">Email</label>
-
                     <div class="relative">
-                        <input type="email" class="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm"
+                        <input type="email" name="email"
+                            class="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm"
                             placeholder="Enter email" />
-
+                        {% if errors %}
+                        {% if 'email' in errors %}
+                        <p class="text-red-500 text-xs italic">{{ errors.email }}</p>
+                        {% endif %}
+                        {% endif %}
                         <span class="absolute inset-y-0 end-0 grid place-content-center px-4">
                             <svg xmlns="http://www.w3.org/2000/svg" class="size-4 text-gray-400" fill="none"
                                 viewBox="0 0 24 24" stroke="currentColor">
@@ -35,11 +47,15 @@
 
                 <div>
                     <label for="Username" class="sr-only">Username</label>
-
                     <div class="relative">
-                        <input type="text" class="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm"
-                            placeholder="Enter name" />
-
+                        <input type="text" name="username"
+                            class="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm"
+                            placeholder="Enter Username" />
+                        {% if errors %}
+                        {% if 'username' in errors %}
+                        <p class="text-red-500 text-xs italic">{{ errors.username }}</p>
+                        {% endif %}
+                        {% endif %}
                         <span class="absolute inset-y-0 end-0 grid place-content-center px-4">
                             <svg xmlns="http://www.w3.org/2000/svg" class="size-4 text-gray-400" fill="none"
                                 viewBox="0 0 24 24" stroke="currentColor">
@@ -52,11 +68,15 @@
 
                 <div>
                     <label for="password" class="sr-only">Password</label>
-
                     <div class="relative">
-                        <input type="password" class="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm"
+                        <input type="password" name="password"
+                            class="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm"
                             placeholder="Enter password" />
-
+                        {% if errors %}
+                        {% if 'password' in errors %}
+                        <p class="text-red-500 text-xs italic">{{ errors.password }}</p>
+                        {% endif %}
+                        {% endif %}
                         <span class="absolute inset-y-0 end-0 grid place-content-center px-4">
                             <svg xmlns="http://www.w3.org/2000/svg" class="size-4 text-gray-400" fill="none"
                                 viewBox="0 0 24 24" stroke="currentColor">
@@ -70,12 +90,21 @@
                 </div>
 
                 <div>
-                    <label for="password" class="sr-only">Confirm Password</label>
-
+                    <label for="confirm_password" class="sr-only">Confirm Password</label>
                     <div class="relative">
-                        <input type="password" class="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm"
-                            placeholder="Enter password" />
-
+                        <input type="password" name="confirm_password"
+                            class="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm"
+                            placeholder="Confirm password" />
+                        {% if errors %}
+                        {% if 'password_match' in errors %}
+                        <p class="text-red-500 text-xs italic">{{ errors.password_match }}</p>
+                        {% endif %}
+                        {% endif %}
+                        {% if errors %}
+                        {% if 'confirm_password' in errors %}
+                        <p class="text-red-500 text-xs italic">{{ errors.confirm_password }}</p>
+                        {% endif %}
+                        {% endif %}
                         <span class="absolute inset-y-0 end-0 grid place-content-center px-4">
                             <svg xmlns="http://www.w3.org/2000/svg" class="size-4 text-gray-400" fill="none"
                                 viewBox="0 0 24 24" stroke="currentColor">
@@ -88,13 +117,31 @@
                     </div>
                 </div>
 
+                <!-- {% if errors %}
+                {% if 'all_fields' in errors %}
+                <p class="text-red-500 text-xs italic">{{ errors.all_fields }}</p>
+                {% endif %}
+                {% if 'password' in errors %}
+                <p class="text-red-500 text-xs italic">{{ errors.password }}</p>
+                {% endif %}
+                {% if 'username' in errors %}
+                <p class="text-red-500 text-xs italic">{{ errors.username }}</p>
+                {% endif %}
+                {% if 'email' in errors %}
+                <p class="text-red-500 text-xs italic">{{ errors.email }}</p>
+                {% endif %}
+                {% if 'unknown_error' in errors %}
+                <p class="text-red-500 text-xs italic">{{ errors.unknown_error }}</p>
+                {% endif %}
+                {% endif %} -->
+
                 <button type="submit"
                     class="block w-full rounded-lg bg-indigo-600 px-5 py-3 text-sm font-medium text-white">
                     Sign Up
                 </button>
 
                 <p class="text-center text-sm text-gray-500">
-                    Alreadt have an account?
+                    Already have an account?
                     <a class="underline" href="/login/">Sign in</a>
                 </p>
             </form>

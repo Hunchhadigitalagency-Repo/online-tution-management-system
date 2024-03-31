@@ -13,7 +13,8 @@
         {% endif %}
     </div>
 
-    <form class="mt-3" action="my-profile/" method="post" enctype="multipart/form-data">
+    <form class="mt-3" action="/my-profile/" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
         <div class="grid grid-rows-1 grid-cols-2 gap-4">
             <div class="mb-2 col-span-1">
                 <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your
@@ -23,11 +24,24 @@
                     value="{{ request.user.email}}" required disabled />
             </div>
             <div class="mb-2 col-span-1">
+                <label for="first_name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your
+                    First Name</label>
+                <input type="text" id="first_name" name="first_name"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    value="{{ request.user.first_name}}" />
+            </div>
+            <div class="mb-2 col-span-1">
+                <label for="last_name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your
+                    Last Name</label>
+                <input type="text" id="last_name" name="last_name"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    value="{{ request.user.last_name}}" />
+            </div>
+            <div class="mb-2 col-span-1">
                 <label for="profile" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your profile
                     image</label>
                 <input type="file" id="profile" name="profile"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    required />
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
             </div>
         </div>
         <h5 class="my-3">Change Your Password</h5>
@@ -36,31 +50,98 @@
             <div class="mb-2 col-span-1">
                 <label for="password" class="block mb-2 mt-2 text-sm font-medium text-gray-900 dark:text-white">Your Old
                     password</label>
-                <input type="password" id="password" name="old_password"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    required />
+                <input type="password" id="old_password" name="old_password"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                {% if old_password_error %}
+                <p class="text-red-500 text-xs italic mt-2">Old password didn't match.</p>
+                {% endif %}
             </div>
             <div class="mb-2 col-span-1">
                 <label for="password" class="block mb-2 mt-2 text-sm font-medium text-gray-900 dark:text-white">New
                     password</label>
-                <input type="password" id="password" name="new_password"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    required />
+                <input type="password" id="password" name="new_password" onKeyUp="handleInputChange()"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                <p id="password_strength_error" class="text-red-500 text-xs italic mt-2"></p>
             </div>
             <div class="mb-2 col-span-1">
                 <label for="password" class="block mb-2 mt-2 text-sm font-medium text-gray-900 dark:text-white">Confirm
                     password</label>
-                <input type="password" id="password" name="confirm_password"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    required />
+                <input type="password" id="confirm_password" name="confirm_password" onchange="handleInputChange()"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                <p id="password_error" class="text-red-500 text-xs italic mt-2"></p>
+                {% if confirm_password_error %}
+                <p class="text-red-500 text-xs italic mt-2">Confirm password didn't match.</p>
+                {% endif %}
             </div>
         </div>
 
         <div class="col-span-2">
-            <button type="submit"
+            <button type="submit" id="submit_button"
                 class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
         </div>
     </form>
 </div>
+
+
+<script>
+    // Function to check password strength
+    function checkPasswordStrength(password) {
+        // Password strength criteria (you can adjust as needed)
+        const strengthCriteria = {
+            minLength: 8,
+            hasUpperCase: /[A-Z]/,
+            hasLowerCase: /[a-z]/,
+            hasNumber: /\d/,
+            hasSpecialChar: /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]+/
+        };
+
+        // Check if password meets all criteria
+        const isStrong =
+            password.length >= strengthCriteria.minLength &&
+            strengthCriteria.hasUpperCase.test(password) &&
+            strengthCriteria.hasLowerCase.test(password) &&
+            strengthCriteria.hasNumber.test(password) &&
+            strengthCriteria.hasSpecialChar.test(password);
+
+        return isStrong;
+    }
+
+    // Function to handle input change event
+    function handleInputChange() {
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirm_password');
+        const errorMessage = document.getElementById('password_error');
+        const passwordStrengthMessage = document.getElementById('password_strength_error');
+
+
+        const submitButton = document.getElementById('submit_button');
+        console.log(confirmPasswordInput.value)
+        // Check if passwords match
+        if (confirmPasswordInput.value != '') {
+            if (passwordInput.value !== confirmPasswordInput.value) {
+                errorMessage.textContent = "Passwords don't match.";
+                submitButton.disabled = true;
+            } else {
+                errorMessage.textContent = "";
+                submitButton.disabled = false;
+            }
+        }
+
+        // Check password strength
+        const isStrongPassword = checkPasswordStrength(passwordInput.value);
+        console.log(isStrongPassword)
+        if (!isStrongPassword) {
+            passwordStrengthMessage.textContent = "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character.";
+            submitButton.disabled = true;
+        } else {
+            passwordStrengthMessage.textContent = "";
+            submitButton.disabled = false;
+        }
+    }
+
+    // Add event listeners to password and confirm password inputs
+    document.getElementById('password').addEventListener('input', handleInputChange);
+    document.getElementById('confirm_password').addEventListener('input', handleInputChange);
+</script>
 
 {% endblock %}

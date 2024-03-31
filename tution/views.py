@@ -4,16 +4,27 @@ from django.contrib.auth import logout,authenticate,login
 from django.shortcuts import redirect,get_object_or_404
 from django.contrib import messages
 from django.http import JsonResponse
-from django.core.files.storage import FileSystemStorage
-import os   
-from django.conf import settings
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import User
+from django.db import IntegrityError
 
 # Create your views here.
 def index(request):
     teachers = UserProfile.objects.select_related('user').filter(role='teacher')
     testimonials = Testimonial.objects.all()
-    return render(request, 'main.html', {'teachers': teachers,'testimonials':testimonials}) 
+
+    # Count the number of teachers
+    teacher_count = UserProfile.objects.filter(role='teacher').count()
+
+    # Count the number of resources
+    resource_count = ClassroomResource.objects.count()
+
+     # Count the number of classes
+    class_count = ClassModel.objects.count()
+
+    # Count the number of enrolled students
+    enrolled_students_count = EnrolledStudent.objects.values('student').distinct().count()
+    return render(request, 'main.html', {'teachers': teachers,'testimonials':testimonials,'teacher_count':teacher_count,'class_count': class_count, 'resource_count': resource_count,'enrolled_students_count': enrolled_students_count}) 
 
 def dashbaord(request):
     if request.user.is_authenticated:
@@ -204,20 +215,84 @@ def loginUser(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
 
+        # Attempt authentication using the provided username
         user = authenticate(request, username=username, password=password)
+
+        # If authentication fails with username, attempt with email
+        if user is None:
+            # Check if there is a user with the provided email
+            try:
+                user_with_email = User.objects.get(email=username)
+                user = authenticate(request, username=user_with_email.username, password=password)
+            except User.DoesNotExist:
+                pass
+
+        # If user is authenticated, log them in
         if user is not None:
             login(request, user)
             # Redirect to a success page or home page
-            return redirect('/dashboard/')  # Replace 'home' with the name of your home URL pattern
+            return redirect('/dashboard/')  # Replace 'dashboard' with the name of your dashboard URL pattern
         else:
             # Return an error message if authentication fails
-            messages.error(request, 'Invalid username or password.')
-            return redirect('/login/')  # Redirect back to the login page
+            error = 'Invalid username or password.'
+            return render(request, 'auth/login.html', {'error': error})
     else:
         return render(request, 'auth/login.html')
 
 def register(request):
-    return render(request,'auth/register.html')
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
+        
+        # Initialize an empty dictionary for errors
+        errors = {}
+        
+        # Check if any field is empty
+        if not email:
+            errors['email'] = "Email field is required."
+        if not username:
+            errors['username'] = "Username field is required."
+        if not password:
+            errors['password'] = "Password field is required."
+        if not confirm_password:
+            errors['confirm_password'] = "Confirm Password field is required."
+        
+        # Check if passwords match
+        if password != confirm_password:
+            errors['password_match'] = "Passwords do not match"
+        
+        # Check if email or username already exist
+        existing_user = User.objects.filter(username=username).exists()
+        if existing_user:
+            errors['username'] = f"Username '{username}' is already taken."
+        existing_email = User.objects.filter(email=email).exists()
+        if existing_email:
+            errors['email'] = f"Email '{email}' is already registered."
+        
+        if errors:
+            # If there are errors, return to the register page with error messages
+            return render(request, 'auth/register.html', {'errors': errors, 'email': email, 'username': username})
+        
+        try:
+            # Create User instance
+            user = User.objects.create_user(username=username, email=email, password=password)
+            
+            # Create UserProfile instance
+            UserProfile.objects.create(user=user, role='student')
+            
+            # Redirect to a success page or login page
+            return redirect('/login/')  # Adjust this to your login URL
+        except IntegrityError as e:
+            if 'UNIQUE constraint failed: auth_user.username' in str(e):
+                errors['username'] = f"Username '{username}' is already taken."
+            else:
+                errors['unknown_error'] = "An error occurred. Please try again."
+            
+            return render(request, 'auth/register.html', {'errors': errors, 'email': email, 'username': username})
+    else:
+        return render(request, 'auth/register.html')
 
 def logoutUser(request):
     logout(request)
