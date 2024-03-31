@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Infonet | Register</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 </head>
 
 <body>
@@ -61,7 +63,7 @@
                 <div>
                     <label for="password" class="sr-only">Password</label>
                     <div class="relative">
-                        <input type="password" name="password"
+                        <input type="password" name="password" 
                             class="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm"
                             placeholder="Enter password" />
                         {% if errors %}
@@ -69,7 +71,7 @@
                         <p class="text-red-500 text-xs italic">{{ errors.password }}</p>
                         {% endif %}
                         {% endif %}
-                        <span class="absolute inset-y-0 end-0 grid place-content-center px-4">
+                        <span class="absolute inset-y-0 end-0 grid place-content-center px-4" id="view_password">
                             <svg xmlns="http://www.w3.org/2000/svg" class="size-4 text-gray-400" fill="none"
                                 viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -84,7 +86,7 @@
                 <div>
                     <label for="confirm_password" class="sr-only">Confirm Password</label>
                     <div class="relative">
-                        <input type="password" name="confirm_password"
+                        <input type="password" name="confirm_password" id="confirm-password"
                             class="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm"
                             placeholder="Confirm password" />
                         {% if errors %}
@@ -97,7 +99,7 @@
                         <p class="text-red-500 text-xs italic">{{ errors.confirm_password }}</p>
                         {% endif %}
                         {% endif %}
-                        <span class="absolute inset-y-0 end-0 grid place-content-center px-4">
+                        <span class="absolute inset-y-0 end-0 grid place-content-center px-4" id="confirm_password">
                             <svg xmlns="http://www.w3.org/2000/svg" class="size-4 text-gray-400" fill="none"
                                 viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -139,6 +141,58 @@
             </form>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const passwordInput = document.querySelector('input[name="password"]');
+            const togglePasswordIcon = document.getElementById('view_password');
+            const eyeIcon = togglePasswordIcon.querySelector('svg');
+
+            togglePasswordIcon.addEventListener('click', function () {
+                const currentType = passwordInput.getAttribute('type');
+                if (currentType === 'password') {
+                    passwordInput.setAttribute('type', 'text');
+                    eyeIcon.innerHTML = `
+                    <path d="M2.99902 3L20.999 21M9.8433 9.91364C9.32066 10.4536 8.99902 11.1892 8.99902 12C8.99902 13.6569 10.3422 15 11.999 15C12.8215 15 13.5667 14.669 14.1086 14.133M6.49902 6.64715C4.59972 7.90034 3.15305 9.78394 2.45703 12C3.73128 16.0571 7.52159 19 11.9992 19C13.9881 19 15.8414 18.4194 17.3988 17.4184M10.999 5.04939C11.328 5.01673 11.6617 5 11.9992 5C16.4769 5 20.2672 7.94291 21.5414 12C21.2607 12.894 20.8577 13.7338 20.3522 14.5" stroke="#969696" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                    `;
+                } else {
+                    passwordInput.setAttribute('type', 'password');
+                    eyeIcon.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    `;
+                }
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const passwordInput = document.getElementById('confirm-password');
+            const togglePasswordIcon = document.getElementById('confirm_password');
+            const eyeIcon = togglePasswordIcon.querySelector('svg');
+
+            togglePasswordIcon.addEventListener('click', function () {
+                const currentType = passwordInput.getAttribute('type');
+                if (currentType === 'password') {
+                    passwordInput.setAttribute('type', 'text');
+                    eyeIcon.innerHTML = `
+                    <path d="M2.99902 3L20.999 21M9.8433 9.91364C9.32066 10.4536 8.99902 11.1892 8.99902 12C8.99902 13.6569 10.3422 15 11.999 15C12.8215 15 13.5667 14.669 14.1086 14.133M6.49902 6.64715C4.59972 7.90034 3.15305 9.78394 2.45703 12C3.73128 16.0571 7.52159 19 11.9992 19C13.9881 19 15.8414 18.4194 17.3988 17.4184M10.999 5.04939C11.328 5.01673 11.6617 5 11.9992 5C16.4769 5 20.2672 7.94291 21.5414 12C21.2607 12.894 20.8577 13.7338 20.3522 14.5" stroke="#969696" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                    `;
+                } else {
+                    passwordInput.setAttribute('type', 'password');
+                    eyeIcon.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    `;
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

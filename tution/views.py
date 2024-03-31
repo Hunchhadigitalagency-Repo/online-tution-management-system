@@ -283,6 +283,7 @@ def register(request):
             UserProfile.objects.create(user=user, role='student')
             
             # Redirect to a success page or login page
+            messages.success(request, "Youre now registered student")
             return redirect('/login/')  # Adjust this to your login URL
         except IntegrityError as e:
             if 'UNIQUE constraint failed: auth_user.username' in str(e):
