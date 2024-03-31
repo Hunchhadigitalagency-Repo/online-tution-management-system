@@ -40,7 +40,7 @@ def dashbaord(request):
             return render(request, 'user/index.html', {'classes': enrolled_classes})
     else:
         # Redirect to login page or handle unauthenticated user
-        return redirect('login') 
+        return redirect('/login/') 
 
 def profile(request):
     current_user = request.user
@@ -77,38 +77,39 @@ def profile(request):
                     # Update user's password
                     request.user.password = make_password(new_password)
                     request.user.save()
+                    login(request, request.user)
                     messages.success(request, "Password changed successfully.")
                     if is_teacher:
                         return render(request,'teacher/profile.html') 
                     else:
-                        return render(request,'user/profile.html');
+                        return render(request,'user/profile.html')
                 else:
                     if is_teacher:
                         messages.error(request, "Confirm password didnt match with new password.")
                         return render(request,'teacher/profile.html',{'confirm_password_error': True}) 
                     else:
-                        return render(request,'user/profile.html');
+                        return render(request,'user/profile.html')
             else:
                 if is_teacher:
                     messages.error(request, "Old password didnt match.")
                     return render(request,'teacher/profile.html', {'old_password_error': True}) 
                 else:
-                    return render(request,'user/profile.html');
+                    return render(request,'user/profile.html')
         elif (old_password and not new_password) or (old_password and not confirm_password):
             if is_teacher:
                 return render(request,'teacher/profile.html') 
             else:
-                return render(request,'user/profile.html');
+                return render(request,'user/profile.html')
         elif (new_password or confirm_password) and not old_password:
             if is_teacher:
                 return render(request,'teacher/profile.html') 
             else:
-                return render(request,'user/profile.html');
+                return render(request,'user/profile.html')
     
     if is_teacher:
         return render(request,'teacher/profile.html') 
     else:
-        return render(request,'user/profile.html');
+        return render(request,'user/profile.html')
 
 def classes(request):
     classes = ClassModel.objects.all()

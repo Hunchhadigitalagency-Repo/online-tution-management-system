@@ -7,7 +7,7 @@
 
     <div class="flex justify-center">
         {% if request.user.userprofile.profile %}
-            <img class="w-40 h-40 rounded-full" src="{{ request.user.userprofile.profile.url }}" alt="User profile picture">
+            <img class="w-40 h-40 rounded-full" src="{{ request.user.userprofile.profile.url }}" alt="User profile picture" style="object-fit:cover;">
         {% else %}
             <img class="w-40 h-40 rounded-full" src="https://static.vecteezy.com/system/resources/thumbnails/009/734/564/small_2x/default-avatar-profile-icon-of-social-media-user-vector.jpg" alt="Default avatar" style="object-fit: cover;">
         {% endif %}
