@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import ClassModel,EnrolledStudent,ClassroomResource,EnrollmentPayment,UserProfile,Testimonial
+from .models import ClassModel,EnrolledStudent,ClassroomResource,EnrollmentPayment,UserProfile,Testimonial,PaymentDetail
 from django.contrib.auth import logout,authenticate,login
 from django.shortcuts import redirect,get_object_or_404
 from django.contrib import messages
@@ -126,11 +126,15 @@ def enrollToClass(request,class_id):
     parent_phone_number = request.POST.get('parent_phone_number')
     address = request.POST.get('address')
 
+    payment = PaymentDetail.objects.first()
+
+
     # Check if the user and class are already enrolled
     existing_enrollment = EnrolledStudent.objects.filter(student=request.user, class_enrolled__id=class_id).first()
     if existing_enrollment:
+
         # If enrollment exists, return that data
-        return render(request, "user/paymentPage.html", {'enroll_data': existing_enrollment})
+        return render(request, "user/paymentPage.html", {'enroll_data': existing_enrollment,'payment_details':payment})
     
     # Assuming EnrolledClass is the model where you want to store this data
     enrolled_class = EnrolledStudent(
@@ -144,7 +148,9 @@ def enrollToClass(request,class_id):
     )
     enrolled_class.save()
 
-    return render(request,"user/paymentPage.html",{'enroll_data':enrolled_class})
+
+
+    return render(request,"user/paymentPage.html",{'enroll_data':enrolled_class,'payment_details':payment})
 
 def submitPayment(request,enroll_id):
     if request.method == 'POST':
@@ -173,7 +179,9 @@ def editClassMeetLink(request,class_id):
         return redirect(f'/enrolled-classes/{class_id}')  # Redirect to a success page or URL
 
 def paymentPage(request):
-    return render(request,"user/paymentPage.html")
+    payment = PaymentDetail.objects.first()
+    print(f"payment ho yo {payment}")
+    return render(request,"user/paymentPage.html",{'payment_details':payment})
 
 def myClasses(request):
     # Retrieve the current logged-in user

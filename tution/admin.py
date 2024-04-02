@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import UserProfile,ClassModel,EnrolledStudent,ClassroomResource,EnrollmentPayment,Testimonial
+from .models import UserProfile,ClassModel,EnrolledStudent,ClassroomResource,EnrollmentPayment,Testimonial,PaymentDetail
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
 from django.db.models import Count
@@ -77,3 +77,15 @@ class ClassModelAdmin(admin.ModelAdmin):
 @admin.register(Testimonial)
 class TestimonialAdmin(admin.ModelAdmin):
     list_display = ('name', 'designation')
+
+
+class PaymentDetailsAdmin(admin.ModelAdmin):
+    def has_add_permission(self, request):
+        # Check if any instance of PaymentDetails exists
+        if PaymentDetail.objects.exists():
+            # Disable the "Add" button
+            return False
+        # Allow adding if no instances exist
+        return True
+
+admin.site.register(PaymentDetail, PaymentDetailsAdmin)

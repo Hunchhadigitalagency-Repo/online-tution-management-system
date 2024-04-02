@@ -80,3 +80,8 @@ class Testimonial(models.Model):
 
     def __str__(self):
         return self.name + ' - ' + self.designation
+    
+class PaymentDetail(models.Model):
+    image = models.FileField(upload_to='payment_images')
+
+
