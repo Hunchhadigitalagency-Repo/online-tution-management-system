@@ -1,3 +1,11 @@
 # Virtual Environment
 bin/
 lib/
+
+# Ignore any generated files
+*.csv
+*.xls
+*.xlsx
+*.db
+*.sqlite
+*.sqlite3
